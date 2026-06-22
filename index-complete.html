@@ -1,0 +1,2108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BasketHub - Tienda de Basquetbol</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container-main {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo h1 {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+
+        .logo p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        .cart-btn {
+            background-color: #fff;
+            color: #ff6b35;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .cart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Content Wrapper */
+        .content-wrapper {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 20px;
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            width: 100%;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            height: fit-content;
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar h2 {
+            color: #ff6b35;
+            margin-bottom: 20px;
+            font-size: 20px;
+            border-bottom: 2px solid #ff6b35;
+            padding-bottom: 10px;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            display: block;
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            background-color: #f0f0f0;
+            border: 2px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .filter-btn:hover {
+            background-color: #ffe6d5;
+        }
+
+        .filter-btn.active {
+            background-color: #ff6b35;
+            color: white;
+            border-color: #f7931e;
+        }
+
+        .filter-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .filter-section.hidden {
+            display: none;
+        }
+
+        .filter-section h3 {
+            color: #333;
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            cursor: pointer;
+            accent-color: #ff6b35;
+        }
+
+        .filter-select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .price-slider {
+            width: 100%;
+            cursor: pointer;
+            accent-color: #ff6b35;
+        }
+
+        #priceValue {
+            color: #ff6b35;
+            font-weight: bold;
+        }
+
+        /* Products Container */
+        .products-container {
+            flex: 1;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        /* Product Card */
+        .product-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-brand {
+            color: #ff6b35;
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+
+        .product-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .product-details {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .product-price {
+            color: #ff6b35;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .product-size {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .size-selector {
+            margin-bottom: 10px;
+        }
+
+        .size-selector select {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .add-to-cart-btn {
+            background-color: #ff6b35;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #f7931e;
+            transform: scale(1.02);
+        }
+
+        .add-to-cart-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.hidden {
+            display: none !important;
+        }
+
+        .modal:not(.hidden) {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        .checkout-modal {
+            max-width: 600px;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .close-btn {
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ff6b35;
+        }
+
+        .modal h2 {
+            color: #ff6b35;
+            margin-bottom: 20px;
+            margin-top: 10px;
+        }
+
+        /* Cart Items */
+        .cart-items {
+            min-height: 100px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-details {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-quantity button {
+            background-color: #ff6b35;
+            color: white;
+            border: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .cart-item-quantity input {
+            width: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 4px;
+        }
+
+        .cart-item-price {
+            font-weight: bold;
+            color: #ff6b35;
+            font-size: 14px;
+            margin-right: 20px;
+        }
+
+        .remove-btn {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-cart p {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        /* Cart Summary */
+        .cart-summary {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #ff6b35;
+            text-align: right;
+        }
+
+        .cart-summary h3 {
+            color: #ff6b35;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .checkout-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .checkout-btn:hover {
+            background-color: #229954;
+            transform: scale(1.02);
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff6b35;
+            box-shadow: 0 0 5px rgba(255, 107, 53, 0.3);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .submit-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background-color: #229954;
+            transform: scale(1.02);
+        }
+
+        .success-message {
+            background-color: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                top: 0;
+            }
+
+            .products-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-main">
+        <!-- Header/Navigation -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>🏀 BasketHub</h1>
+                    <p>Tu tienda oficial de basquetbol</p>
+                </div>
+                <div class="header-actions">
+                    <button class="cart-btn" id="cartBtn">
+                        🛒 Carrito (<span id="cartCount">0</span>)
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Contenedor principal -->
+        <div class="content-wrapper">
+            <!-- Sidebar de filtros -->
+            <aside class="sidebar">
+                <h2>Categorías</h2>
+                <div class="filter-group">
+                    <button class="filter-btn active" data-category="all">
+                        Todos los productos
+                    </button>
+                    <button class="filter-btn" data-category="zapatillas">
+                        👟 Zapatillas
+                    </button>
+                    <button class="filter-btn" data-category="ropa">
+                        👕 Ropa/Accesorios
+                    </button>
+                </div>
+
+                <!-- Filtros específicos para zapatillas -->
+                <div id="zapatillasFilters" class="filter-section hidden">
+                    <h3>Filtrar Zapatillas</h3>
+                    <div class="filter-group">
+                        <label><strong>Marca:</strong></label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" class="brand-filter" value="Nike"> Nike</label>
+                            <label><input type="checkbox" class="brand-filter" value="Adidas"> Adidas</label>
+                            <label><input type="checkbox" class="brand-filter" value="Jordan"> Jordan</label>
+                            <label><input type="checkbox" class="brand-filter" value="Puma"> Puma</label>
+                            <label><input type="checkbox" class="brand-filter" value="Reebok"> Reebok</label>
+                            <label><input type="checkbox" class="brand-filter" value="UnderArmour"> Under Armour</label>
+                            <label><input type="checkbox" class="brand-filter" value="NewBalance"> New Balance</label>
+                            <label><input type="checkbox" class="brand-filter" value="Anta"> Anta</label>
+                            <label><input type="checkbox" class="brand-filter" value="361"> 361</label>
+                            <label><input type="checkbox" class="brand-filter" value="AND1"> AND1</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label><strong>Talle US:</strong></label>
+                        <select id="sizeFilter" class="filter-select">
+                            <option value="">Todos los talles</option>
+                            <option value="7.5">7.5</option>
+                            <option value="8">8</option>
+                            <option value="8.5">8.5</option>
+                            <option value="9">9</option>
+                            <option value="9.5">9.5</option>
+                            <option value="10">10</option>
+                            <option value="10.5">10.5</option>
+                            <option value="11">11</option>
+                            <option value="11.5">11.5</option>
+                            <option value="12">12</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label><strong>Rango de precio:</strong></label>
+                        <input type="range" id="priceRange" min="0" max="300" value="300" class="price-slider">
+                        <p>Hasta: $<span id="priceValue">300</span></p>
+                    </div>
+                </div>
+
+                <!-- Filtros específicos para ropa/accesorios -->
+                <div id="ropaFilters" class="filter-section hidden">
+                    <h3>Filtrar Ropa/Accesorios</h3>
+                    <div class="filter-group">
+                        <label><strong>Tipo:</strong></label>
+                        <div class="checkbox-group">
+                            <label><input type="checkbox" class="ropa-type-filter" value="camiseta"> Camisetas NBA</label>
+                            <label><input type="checkbox" class="ropa-type-filter" value="remera"> Remeras Manga Corta</label>
+                            <label><input type="checkbox" class="ropa-type-filter" value="buzo"> Buzos</label>
+                            <label><input type="checkbox" class="ropa-type-filter" value="accesorios"> Accesorios</label>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label><strong>Talle:</strong></label>
+                        <select id="sizeRopaFilter" class="filter-select">
+                            <option value="">Todos los talles</option>
+                            <option value="XS">XS</option>
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L">L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                            <option value="XXXL">XXXL</option>
+                        </select>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Grid de productos -->
+            <main class="products-container">
+                <div class="products-grid" id="productsGrid">
+                    <!-- Los productos se cargarán aquí con JavaScript -->
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal del carrito -->
+    <div id="cartModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>🛒 Tu Carrito</h2>
+            <div id="cartItems" class="cart-items">
+                <!-- Items del carrito irán aquí -->
+            </div>
+            <div class="cart-summary">
+                <h3>Total: $<span id="totalPrice">0.00</span></h3>
+                <button class="checkout-btn" id="checkoutBtn">Proceder al Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de checkout -->
+    <div id="checkoutModal" class="modal hidden">
+        <div class="modal-content checkout-modal">
+            <span class="close-btn">&times;</span>
+            <h2>Información de Compra</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="fullName">Nombre Completo:</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Teléfono:</label>
+                    <input type="tel" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Dirección:</label>
+                    <input type="text" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="city">Ciudad:</label>
+                    <input type="text" id="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="postalCode">Código Postal:</label>
+                    <input type="text" id="postalCode" required>
+                </div>
+                <div class="form-group">
+                    <label for="cardNumber">Número de Tarjeta:</label>
+                    <input type="text" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="expiryDate">Fecha Vencimiento:</label>
+                        <input type="text" id="expiryDate" placeholder="MM/AA" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cvv">CVV:</label>
+                        <input type="text" id="cvv" placeholder="123" required>
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Completar Compra</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de productos - Zapatillas, Ropa y Accesorios
+        const products = [
+            // ========== ZAPATILLAS ==========
+            
+            // Nike
+            {
+                id: 1,
+                category: "zapatillas",
+                brand: "Nike",
+                name: "Nike LeBron 21",
+                price: 185,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Zapatilla de alto rendimiento para basquetbol"
+            },
+            {
+                id: 2,
+                category: "zapatillas",
+                brand: "Nike",
+                name: "Nike Kyrie 8",
+                price: 160,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Diseñada para velocidad y agilidad"
+            },
+            {
+                id: 3,
+                category: "zapatillas",
+                brand: "Nike",
+                name: "Nike Zoom Freak 4",
+                price: 170,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Zapatilla versátil para juego rápido"
+            },
+            {
+                id: 4,
+                category: "zapatillas",
+                brand: "Nike",
+                name: "Nike Phantom GT",
+                price: 155,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Comodidad y soporte excepcional"
+            },
+
+            // Adidas
+            {
+                id: 5,
+                category: "zapatillas",
+                brand: "Adidas",
+                name: "Adidas Dame 8",
+                price: 175,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Excelente tracción y estabilidad"
+            },
+            {
+                id: 6,
+                category: "zapatillas",
+                brand: "Adidas",
+                name: "Adidas Harden Vol. 7",
+                price: 180,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Diseño perfecto para scorers"
+            },
+            {
+                id: 7,
+                category: "zapatillas",
+                brand: "Adidas",
+                name: "Adidas D.O.N Issue 4",
+                price: 165,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Ligereza y maniobrabilidad"
+            },
+            {
+                id: 8,
+                category: "zapatillas",
+                brand: "Adidas",
+                name: "Adidas Exhibit A 2.0",
+                price: 150,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Precio accesible sin sacrificar calidad"
+            },
+
+            // Jordan
+            {
+                id: 9,
+                category: "zapatillas",
+                brand: "Jordan",
+                name: "Air Jordan 38",
+                price: 195,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Tecnología Jordan de última generación"
+            },
+            {
+                id: 10,
+                category: "zapatillas",
+                brand: "Jordan",
+                name: "Air Jordan 37",
+                price: 180,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Icónica línea Jordan"
+            },
+            {
+                id: 11,
+                category: "zapatillas",
+                brand: "Jordan",
+                name: "Jordan Zion 3",
+                price: 170,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Diseñada para potencia"
+            },
+            {
+                id: 12,
+                category: "zapatillas",
+                brand: "Jordan",
+                name: "Jordan Luka 2",
+                price: 160,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Versatilidad para todos los estilos"
+            },
+
+            // Puma
+            {
+                id: 13,
+                category: "zapatillas",
+                brand: "Puma",
+                name: "Puma Dreamer 2",
+                price: 145,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Comodidad premium a buen precio"
+            },
+            {
+                id: 14,
+                category: "zapatillas",
+                brand: "Puma",
+                name: "Puma Stewie 3",
+                price: 155,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Diseño moderno y elegante"
+            },
+            {
+                id: 15,
+                category: "zapatillas",
+                brand: "Puma",
+                name: "Puma Playmaker Pro",
+                price: 165,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Zapatilla versátil de alto rendimiento"
+            },
+            {
+                id: 16,
+                category: "zapatillas",
+                brand: "Puma",
+                name: "Puma MB.03",
+                price: 170,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Velocidad y control"
+            },
+
+            // Reebok
+            {
+                id: 17,
+                category: "zapatillas",
+                brand: "Reebok",
+                name: "Reebok Shaq Attaq",
+                price: 155,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Clásico retro con tecnología moderna"
+            },
+            {
+                id: 18,
+                category: "zapatillas",
+                brand: "Reebok",
+                name: "Reebok Pump Omni Zone",
+                price: 160,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Sistema de ajuste innovador"
+            },
+            {
+                id: 19,
+                category: "zapatillas",
+                brand: "Reebok",
+                name: "Reebok Question Mid",
+                price: 165,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Icónica zapatilla de basquetbol"
+            },
+            {
+                id: 20,
+                category: "zapatillas",
+                brand: "Reebok",
+                name: "Reebok Floatride Energy",
+                price: 150,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Amortiguación reactiva"
+            },
+
+            // Under Armour
+            {
+                id: 21,
+                category: "zapatillas",
+                brand: "UnderArmour",
+                name: "UA Curry Flow 10",
+                price: 175,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Flujo de juego extremo"
+            },
+            {
+                id: 22,
+                category: "zapatillas",
+                brand: "UnderArmour",
+                name: "UA Hovr Havoc 5",
+                price: 160,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Tecnología Hovr"
+            },
+            {
+                id: 23,
+                category: "zapatillas",
+                brand: "UnderArmour",
+                name: "UA Embiid 1",
+                price: 170,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Diseñada para bígmens"
+            },
+            {
+                id: 24,
+                category: "zapatillas",
+                brand: "UnderArmour",
+                name: "UA Jet 23",
+                price: 155,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Velocidad extrema"
+            },
+
+            // New Balance
+            {
+                id: 25,
+                category: "zapatillas",
+                brand: "NewBalance",
+                name: "New Balance TWO WXY v4",
+                price: 165,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Rendimiento y estilo"
+            },
+            {
+                id: 26,
+                category: "zapatillas",
+                brand: "NewBalance",
+                name: "New Balance Omn1s",
+                price: 170,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Zapatilla versátil premium"
+            },
+            {
+                id: 27,
+                category: "zapatillas",
+                brand: "NewBalance",
+                name: "New Balance Kawhi",
+                price: 160,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Comodidad defensiva"
+            },
+            {
+                id: 28,
+                category: "zapatillas",
+                brand: "NewBalance",
+                name: "New Balance 990v6",
+                price: 175,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Clásico que sigue siendo relevante"
+            },
+
+            // Anta
+            {
+                id: 29,
+                category: "zapatillas",
+                brand: "Anta",
+                name: "Anta KT7",
+                price: 140,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Zapatilla de calidad a precio competitivo"
+            },
+            {
+                id: 30,
+                category: "zapatillas",
+                brand: "Anta",
+                name: "Anta Shock The Game",
+                price: 145,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Impacto en la cancha"
+            },
+            {
+                id: 31,
+                category: "zapatillas",
+                brand: "Anta",
+                name: "Anta Kai 2",
+                price: 150,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Rendimiento asiático de clase mundial"
+            },
+            {
+                id: 32,
+                category: "zapatillas",
+                brand: "Anta",
+                name: "Anta Flash",
+                price: 135,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Velocidad suprema"
+            },
+
+            // 361
+            {
+                id: 33,
+                category: "zapatillas",
+                brand: "361",
+                name: "361 Degrees Space",
+                price: 138,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Tecnología espacial en el piso"
+            },
+            {
+                id: 34,
+                category: "zapatillas",
+                brand: "361",
+                name: "361 Degrees Wind",
+                price: 145,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Ligereza extrema"
+            },
+            {
+                id: 35,
+                category: "zapatillas",
+                brand: "361",
+                name: "361 Degrees Storm",
+                price: 150,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Potencia y control"
+            },
+            {
+                id: 36,
+                category: "zapatillas",
+                brand: "361",
+                name: "361 Degrees Nova",
+                price: 142,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Innovación en cada paso"
+            },
+
+            // AND1
+            {
+                id: 37,
+                category: "zapatillas",
+                brand: "AND1",
+                name: "AND1 Tai Chi",
+                price: 130,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Estilo callejero de AND1"
+            },
+            {
+                id: 38,
+                category: "zapatillas",
+                brand: "AND1",
+                name: "AND1 Chosen One",
+                price: 135,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Icónica línea de AND1"
+            },
+            {
+                id: 39,
+                category: "zapatillas",
+                brand: "AND1",
+                name: "AND1 Streetball",
+                price: 128,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Clásico del streetball"
+            },
+            {
+                id: 40,
+                category: "zapatillas",
+                brand: "AND1",
+                name: "AND1 Rocket",
+                price: 132,
+                image: "👟",
+                sizes: ["7.5", "8", "8.5", "9", "9.5", "10", "10.5", "11", "11.5", "12"],
+                description: "Velocidad en la cancha"
+            },
+
+            // ========== CAMISETAS NBA ==========
+            {
+                id: 41,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Lakers",
+                name: "Lakers #23 - LeBron James",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Lakers"
+            },
+            {
+                id: 42,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Celtics",
+                name: "Celtics #4 - Jayson Tatum",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Celtics"
+            },
+            {
+                id: 43,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Heat",
+                name: "Heat #3 - D. Wade",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Heat"
+            },
+            {
+                id: 44,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Knicks",
+                name: "Knicks #34 - Julius Randle",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Knicks"
+            },
+            {
+                id: 45,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Nets",
+                name: "Nets #7 - Kevin Durant",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Nets"
+            },
+            {
+                id: 46,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Warriors",
+                name: "Warriors #30 - Stephen Curry",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Warriors"
+            },
+            {
+                id: 47,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Mavericks",
+                name: "Mavericks #77 - Luka Doncic",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Mavericks"
+            },
+            {
+                id: 48,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Suns",
+                name: "Suns #1 - Devin Booker",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Suns"
+            },
+            {
+                id: 49,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Nuggets",
+                name: "Nuggets #15 - Nikola Jokic",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta oficial Nuggets"
+            },
+            {
+                id: 50,
+                category: "ropa",
+                type: "camiseta",
+                brand: "Bulls",
+                name: "Bulls #23 - Michael Jordan",
+                price: 89,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Camiseta clásica Bulls"
+            },
+
+            // ========== REMERAS MANGA CORTA ==========
+            {
+                id: 51,
+                category: "ropa",
+                type: "remera",
+                brand: "Lakers",
+                name: "Lakers Shooting Shirt - Purple",
+                price: 45,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera de entrenamiento Lakers"
+            },
+            {
+                id: 52,
+                category: "ropa",
+                type: "remera",
+                brand: "Celtics",
+                name: "Celtics Practice Tee - Green",
+                price: 45,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera de entrenamiento Celtics"
+            },
+            {
+                id: 53,
+                category: "ropa",
+                type: "remera",
+                brand: "Heat",
+                name: "Heat Training Shirt - Red",
+                price: 45,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera de entrenamiento Heat"
+            },
+            {
+                id: 54,
+                category: "ropa",
+                type: "remera",
+                brand: "Knicks",
+                name: "Knicks Casual Tee - Orange",
+                price: 45,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera casual Knicks"
+            },
+            {
+                id: 55,
+                category: "ropa",
+                type: "remera",
+                brand: "Nets",
+                name: "Nets Graphix Tee - Black",
+                price: 45,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera gráfica Nets"
+            },
+            {
+                id: 56,
+                category: "ropa",
+                type: "remera",
+                brand: "Warriors",
+                name: "Warriors Performance Tee - Blue",
+                price: 50,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera de performance Warriors"
+            },
+            {
+                id: 57,
+                category: "ropa",
+                type: "remera",
+                brand: "Mavericks",
+                name: "Mavericks Classic Tee - White",
+                price: 45,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera clásica Mavericks"
+            },
+            {
+                id: 58,
+                category: "ropa",
+                type: "remera",
+                brand: "Suns",
+                name: "Suns Retro Tee - Orange",
+                price: 45,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera retro Suns"
+            },
+            {
+                id: 59,
+                category: "ropa",
+                type: "remera",
+                brand: "Nuggets",
+                name: "Nuggets Gold Tee - Yellow",
+                price: 48,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera oro de Nuggets"
+            },
+            {
+                id: 60,
+                category: "ropa",
+                type: "remera",
+                brand: "Bulls",
+                name: "Bulls Legendary Tee - Red",
+                price: 50,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Remera legendaria Bulls"
+            },
+
+            // ========== BUZOS ==========
+            {
+                id: 61,
+                category: "ropa",
+                type: "buzo",
+                brand: "Lakers",
+                name: "Lakers Warm-Up Hoodie",
+                price: 95,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Buzo calentamiento Lakers"
+            },
+            {
+                id: 62,
+                category: "ropa",
+                type: "buzo",
+                brand: "Celtics",
+                name: "Celtics Full-Zip Jacket",
+                price: 95,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Buzo con cierre completo Celtics"
+            },
+            {
+                id: 63,
+                category: "ropa",
+                type: "buzo",
+                brand: "Heat",
+                name: "Heat Team Hoodie",
+                price: 100,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Buzo oficial del equipo Heat"
+            },
+            {
+                id: 64,
+                category: "ropa",
+                type: "buzo",
+                brand: "Knicks",
+                name: "Knicks Championship Hoodie",
+                price: 105,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Buzo campeonato Knicks"
+            },
+            {
+                id: 65,
+                category: "ropa",
+                type: "buzo",
+                brand: "Nets",
+                name: "Nets Windbreaker",
+                price: 90,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Rompevientos Nets"
+            },
+            {
+                id: 66,
+                category: "ropa",
+                type: "buzo",
+                brand: "Warriors",
+                name: "Warriors Tech Hoodie",
+                price: 110,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Buzo tech Warriors"
+            },
+            {
+                id: 67,
+                category: "ropa",
+                type: "buzo",
+                brand: "Mavericks",
+                name: "Mavericks Premium Jacket",
+                price: 115,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Chaqueta premium Mavericks"
+            },
+            {
+                id: 68,
+                category: "ropa",
+                type: "buzo",
+                brand: "Suns",
+                name: "Suns Fleece Hoodie",
+                price: 85,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Buzo polar Suns"
+            },
+            {
+                id: 69,
+                category: "ropa",
+                type: "buzo",
+                brand: "Nuggets",
+                name: "Nuggets Rain Jacket",
+                price: 100,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Chaqueta para lluvia Nuggets"
+            },
+            {
+                id: 70,
+                category: "ropa",
+                type: "buzo",
+                brand: "Bulls",
+                name: "Bulls Alumni Hoodie",
+                price: 120,
+                image: "🧥",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Buzo alumni Bulls"
+            },
+
+            // ========== ACCESORIOS ==========
+            
+            // Rodilleras
+            {
+                id: 71,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Nike",
+                name: "Nike Pro Knee Sleeve",
+                price: 35,
+                image: "🦵",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Rodillera compresiva Nike"
+            },
+            {
+                id: 72,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Adidas",
+                name: "Adidas Knee Support",
+                price: 32,
+                image: "🦵",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Soporte de rodilla Adidas"
+            },
+            {
+                id: 73,
+                category: "ropa",
+                type: "accesorios",
+                brand: "UnderArmour",
+                name: "UA Compression Knee Sleeve",
+                price: 38,
+                image: "🦵",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Manga de compresión rodilla UA"
+            },
+            {
+                id: 74,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Puma",
+                name: "Puma Knee Wrap",
+                price: 28,
+                image: "🦵",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Envoltorio de rodilla Puma"
+            },
+
+            // Muñequeras
+            {
+                id: 75,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Nike",
+                name: "Nike Wristband",
+                price: 15,
+                image: "💪",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Muñequera Nike"
+            },
+            {
+                id: 76,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Adidas",
+                name: "Adidas Wrist Support",
+                price: 18,
+                image: "💪",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Soporte de muñeca Adidas"
+            },
+            {
+                id: 77,
+                category: "ropa",
+                type: "accesorios",
+                brand: "UnderArmour",
+                name: "UA Compression Wristband",
+                price: 20,
+                image: "💪",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Muñequera compresiva UA"
+            },
+            {
+                id: 78,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Puma",
+                name: "Puma Wrist Wrap",
+                price: 14,
+                image: "💪",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Envoltorio de muñeca Puma"
+            },
+
+            // Cubrebrazos
+            {
+                id: 79,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Nike",
+                name: "Nike Shooting Sleeve",
+                price: 25,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Manga de tiro Nike"
+            },
+            {
+                id: 80,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Adidas",
+                name: "Adidas Arm Sleeve",
+                price: 22,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Manga de brazo Adidas"
+            },
+            {
+                id: 81,
+                category: "ropa",
+                type: "accesorios",
+                brand: "UnderArmour",
+                name: "UA Compression Sleeve",
+                price: 28,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Manga compresiva UA"
+            },
+            {
+                id: 82,
+                category: "ropa",
+                type: "accesorios",
+                brand: "Puma",
+                name: "Puma Arm Compression",
+                price: 20,
+                image: "👕",
+                sizes: ["XS", "S", "M", "L", "XL", "XXL", "XXXL"],
+                description: "Compresión de brazo Puma"
+            }
+        ];
+
+        // Variables globales
+        let cart = [];
+        let filteredProducts = [...products];
+        let currentCategory = "all";
+        let selectedBrands = [];
+        let selectedRopaTypes = [];
+        let selectedPrice = 300;
+        let selectedSize = "";
+        let selectedRopaSize = "";
+
+        // DOM Elements
+        const productsGrid = document.getElementById("productsGrid");
+        const cartBtn = document.getElementById("cartBtn");
+        const cartModal = document.getElementById("cartModal");
+        const checkoutModal = document.getElementById("checkoutModal");
+        const closeButtons = document.querySelectorAll(".close-btn");
+        const filterBtns = document.querySelectorAll(".filter-btn");
+        const brandFilters = document.querySelectorAll(".brand-filter");
+        const ropaTypeFilters = document.querySelectorAll(".ropa-type-filter");
+        const sizeFilter = document.getElementById("sizeFilter");
+        const sizeRopaFilter = document.getElementById("sizeRopaFilter");
+        const priceRange = document.getElementById("priceRange");
+        const priceValue = document.getElementById("priceValue");
+        const checkoutBtn = document.getElementById("checkoutBtn");
+        const checkoutForm = document.getElementById("checkoutForm");
+        const zapatillasFilters = document.getElementById("zapatillasFilters");
+        const ropaFilters = document.getElementById("ropaFilters");
+
+        // Event Listeners
+        cartBtn.addEventListener("click", () => {
+            cartModal.classList.remove("hidden");
+            renderCart();
+        });
+
+        checkoutBtn.addEventListener("click", () => {
+            cartModal.classList.add("hidden");
+            checkoutModal.classList.remove("hidden");
+        });
+
+        closeButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.target.closest(".modal").classList.add("hidden");
+            });
+        });
+
+        window.addEventListener("click", (e) => {
+            if (e.target === cartModal) {
+                cartModal.classList.add("hidden");
+            }
+            if (e.target === checkoutModal) {
+                checkoutModal.classList.add("hidden");
+            }
+        });
+
+        // Filtros de categoría
+        filterBtns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                filterBtns.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                currentCategory = btn.dataset.category;
+                
+                // Mostrar/ocultar filtros específicos
+                if (currentCategory === "zapatillas") {
+                    zapatillasFilters.classList.remove("hidden");
+                    ropaFilters.classList.add("hidden");
+                } else if (currentCategory === "ropa") {
+                    ropaFilters.classList.remove("hidden");
+                    zapatillasFilters.classList.add("hidden");
+                } else {
+                    zapatillasFilters.classList.add("hidden");
+                    ropaFilters.classList.add("hidden");
+                }
+                
+                applyFilters();
+            });
+        });
+
+        // Filtros de marca (zapatillas)
+        brandFilters.forEach(checkbox => {
+            checkbox.addEventListener("change", () => {
+                selectedBrands = Array.from(brandFilters)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+                applyFilters();
+            });
+        });
+
+        // Filtros de tipo (ropa/accesorios)
+        ropaTypeFilters.forEach(checkbox => {
+            checkbox.addEventListener("change", () => {
+                selectedRopaTypes = Array.from(ropaTypeFilters)
+                    .filter(cb => cb.checked)
+                    .map(cb => cb.value);
+                applyFilters();
+            });
+        });
+
+        // Filtro de talle (zapatillas)
+        sizeFilter.addEventListener("change", () => {
+            selectedSize = sizeFilter.value;
+            applyFilters();
+        });
+
+        // Filtro de talle (ropa)
+        sizeRopaFilter.addEventListener("change", () => {
+            selectedRopaSize = sizeRopaFilter.value;
+            applyFilters();
+        });
+
+        // Filtro de precio
+        priceRange.addEventListener("input", () => {
+            selectedPrice = parseInt(priceRange.value);
+            priceValue.textContent = selectedPrice;
+            applyFilters();
+        });
+
+        // Función para aplicar todos los filtros
+        function applyFilters() {
+            let filtered = [...products];
+
+            // Filtro de categoría
+            if (currentCategory !== "all") {
+                filtered = filtered.filter(p => p.category === currentCategory);
+            }
+
+            // Filtro de marca (solo para zapatillas)
+            if (currentCategory === "zapatillas" && selectedBrands.length > 0) {
+                filtered = filtered.filter(p => selectedBrands.includes(p.brand));
+            }
+
+            // Filtro de tipo de ropa
+            if (currentCategory === "ropa" && selectedRopaTypes.length > 0) {
+                filtered = filtered.filter(p => selectedRopaTypes.includes(p.type));
+            }
+
+            // Filtro de talle (zapatillas)
+            if (currentCategory === "zapatillas" && selectedSize) {
+                filtered = filtered.filter(p => p.sizes.includes(selectedSize));
+            }
+
+            // Filtro de talle (ropa)
+            if (currentCategory === "ropa" && selectedRopaSize) {
+                filtered = filtered.filter(p => p.sizes.includes(selectedRopaSize));
+            }
+
+            // Filtro de precio
+            filtered = filtered.filter(p => p.price <= selectedPrice);
+
+            filteredProducts = filtered;
+            renderProducts();
+        }
+
+        // Función para renderizar productos
+        function renderProducts() {
+            productsGrid.innerHTML = "";
+
+            if (filteredProducts.length === 0) {
+                productsGrid.innerHTML = `
+                    <div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #999;">
+                        <p style="font-size: 18px;">No hay productos que coincidan con tus filtros</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredProducts.forEach(product => {
+                const card = document.createElement("div");
+                card.className = "product-card";
+
+                let sizeOptions = product.sizes.map(size => 
+                    `<option value="${size}">${size}</option>`
+                ).join("");
+
+                card.innerHTML = `
+                    <div class="product-image">${product.image}</div>
+                    <div class="product-info">
+                        <div class="product-brand">${product.brand}</div>
+                        <div class="product-name">${product.name}</div>
+                        <div class="product-details">${product.description}</div>
+                        <div class="product-price">$${product.price.toFixed(2)}</div>
+                        <div class="size-selector">
+                            <select class="size-select" data-product-id="${product.id}">
+                                <option value="">Seleccionar talle</option>
+                                ${sizeOptions}
+                            </select>
+                        </div>
+                        <button class="add-to-cart-btn" data-product-id="${product.id}">
+                            Agregar al carrito
+                        </button>
+                    </div>
+                `;
+
+                productsGrid.appendChild(card);
+
+                // Event listener para agregar al carrito
+                const addBtn = card.querySelector(".add-to-cart-btn");
+                const sizeSelect = card.querySelector(".size-select");
+
+                addBtn.addEventListener("click", () => {
+                    const selectedSize = sizeSelect.value;
+                    if (!selectedSize) {
+                        alert("Por favor selecciona un talle");
+                        return;
+                    }
+                    addToCart(product, selectedSize);
+                    sizeSelect.value = "";
+                });
+            });
+        }
+
+        // Función para agregar productos al carrito
+        function addToCart(product, size) {
+            const existingItem = cart.find(item => item.id === product.id && item.size === size);
+
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    ...product,
+                    size: size,
+                    quantity: 1
+                });
+            }
+
+            updateCartCount();
+            showNotification(`${product.name} agregado al carrito`);
+        }
+
+        // Función para actualizar el contador del carrito
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById("cartCount").textContent = totalItems;
+            localStorage.setItem("cart", JSON.stringify(cart));
+        }
+
+        // Función para renderizar el carrito
+        function renderCart() {
+            const cartItemsContainer = document.getElementById("cartItems");
+            const totalPriceSpan = document.getElementById("totalPrice");
+
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <p>🛒 Tu carrito está vacío</p>
+                    </div>
+                `;
+                totalPriceSpan.textContent = "0.00";
+                document.querySelector(".checkout-btn").disabled = true;
+                return;
+            }
+
+            cartItemsContainer.innerHTML = "";
+            let total = 0;
+
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+
+                const cartItem = document.createElement("div");
+                cartItem.className = "cart-item";
+                cartItem.innerHTML = `
+                    <div class="cart-item-info">
+                        <div class="cart-item-name">${item.name}</div>
+                        <div class="cart-item-details">${item.brand} - Talle: ${item.size}</div>
+                        <div class="cart-item-quantity">
+                            <button class="qty-btn" data-index="${index}" data-action="decrease">−</button>
+                            <input type="number" value="${item.quantity}" min="1" class="qty-input" data-index="${index}" readonly>
+                            <button class="qty-btn" data-index="${index}" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    <div class="cart-item-price">$${itemTotal.toFixed(2)}</div>
+                    <button class="remove-btn" data-index="${index}">Eliminar</button>
+                `;
+
+                cartItemsContainer.appendChild(cartItem);
+            });
+
+            // Event listeners para cantidad
+            document.querySelectorAll(".qty-btn").forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    const index = parseInt(btn.dataset.index);
+                    const action = btn.dataset.action;
+
+                    if (action === "increase") {
+                        cart[index].quantity += 1;
+                    } else if (action === "decrease" && cart[index].quantity > 1) {
+                        cart[index].quantity -= 1;
+                    }
+
+                    updateCartCount();
+                    renderCart();
+                });
+            });
+
+            // Event listeners para eliminar
+            document.querySelectorAll(".remove-btn").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    const index = parseInt(btn.dataset.index);
+                    cart.splice(index, 1);
+                    updateCartCount();
+                    renderCart();
+                });
+            });
+
+            totalPriceSpan.textContent = total.toFixed(2);
+            document.querySelector(".checkout-btn").disabled = false;
+        }
+
+        // Formulario de checkout
+        checkoutForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            const formData = {
+                fullName: document.getElementById("fullName").value,
+                email: document.getElementById("email").value,
+                phone: document.getElementById("phone").value,
+                address: document.getElementById("address").value,
+                city: document.getElementById("city").value,
+                postalCode: document.getElementById("postalCode").value,
+                cardNumber: document.getElementById("cardNumber").value,
+                expiryDate: document.getElementById("expiryDate").value,
+                cvv: document.getElementById("cvv").value,
+                items: cart,
+                total: calculateTotal(),
+                timestamp: new Date().toLocaleString()
+            };
+
+            // Guardar en localStorage
+            const orders = JSON.parse(localStorage.getItem("orders")) || [];
+            orders.push(formData);
+            localStorage.setItem("orders", JSON.stringify(orders));
+
+            // Mostrar confirmación
+            showSuccessMessage(formData);
+        });
+
+        // Función para calcular el total
+        function calculateTotal() {
+            return cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        }
+
+        // Función para mostrar mensaje de compra exitosa
+        function showSuccessMessage(formData) {
+            const total = calculateTotal();
+            const itemsText = cart.map(item => `${item.name} (${item.quantity}x $${item.price})`).join("\n");
+
+            let message = `✅ ¡COMPRA REALIZADA CON ÉXITO!\n\n`;
+            message += `Datos del cliente:\n`;
+            message += `Nombre: ${formData.fullName}\n`;
+            message += `Email: ${formData.email}\n`;
+            message += `Teléfono: ${formData.phone}\n`;
+            message += `Dirección: ${formData.address}, ${formData.city}\n`;
+            message += `Código Postal: ${formData.postalCode}\n\n`;
+            message += `Productos:\n${itemsText}\n\n`;
+            message += `Total: $${total.toFixed(2)}\n\n`;
+            message += `Fecha: ${formData.timestamp}`;
+
+            alert(message);
+
+            // Limpiar
+            cart = [];
+            checkoutForm.reset();
+            checkoutModal.classList.add("hidden");
+            updateCartCount();
+            renderCart();
+            applyFilters();
+        }
+
+        // Función para mostrar notificaciones
+        function showNotification(message) {
+            const notification = document.createElement("div");
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                right: 20px;
+                background-color: #27ae60;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 5px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                z-index: 1001;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = "slideOut 0.3s ease";
+                setTimeout(() => notification.remove(), 300);
+            }, 2500);
+        }
+
+        // Cargar carrito guardado al iniciar
+        window.addEventListener("DOMContentLoaded", () => {
+            const savedCart = localStorage.getItem("cart");
+            if (savedCart) {
+                cart = JSON.parse(savedCart);
+                updateCartCount();
+            }
+            renderProducts();
+        });
+    </script>
+</body>
+</html>
